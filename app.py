@@ -181,7 +181,7 @@ def update_profile():
 def teacher_dashboard():
     if 'user_id' not in session or session['role'] != 'teacher': return redirect(url_for('login'))
     dept = session.get('department')
-    students = execute_query('SELECT * FROM users WHERE role = "student" AND department = ?', (dept,), fetchall=True)
+    students = execute_query("SELECT * FROM users WHERE role = 'student' AND department = ?", (dept,), fetchall=True)
     notices = execute_query('SELECT * FROM notices WHERE department = ? ORDER BY date_posted DESC', (dept,), fetchall=True)
     deadlines = execute_query('SELECT * FROM deadlines WHERE department = ? ORDER BY due_date ASC', (dept,), fetchall=True)
     return render_template('teacher.html', name=session['name'], department=dept, students=students, notices=notices, deadlines=deadlines)
@@ -211,7 +211,7 @@ def delete_deadline(id):
 @app.route('/view_profile/<int:student_id>')
 def view_profile(student_id):
     if 'user_id' not in session or session['role'] != 'teacher': return redirect(url_for('login'))
-    student = execute_query('SELECT * FROM users WHERE id = ? AND role = "student"', (student_id,), fetchone=True)
+    student = execute_query("SELECT * FROM users WHERE id = ? AND role = 'student'", (student_id,), fetchone=True)
     subjects = execute_query('SELECT * FROM subjects WHERE student_id = ?', (student_id,), fetchall=True)
     return render_template('view_profile.html', student=student, subjects=subjects)
 
