@@ -51,7 +51,7 @@ def execute_query(query, params=(), fetchone=False, fetchall=False):
             cols = [desc[0] for desc in cur.description]
             result = [dict(zip(cols, row)) for row in rows]
         else:
-            result = rows
+            result = rows or []
     
     if not (fetchone or fetchall):
         conn.commit()
@@ -107,11 +107,12 @@ def init_db():
             cmd = cmd.replace('SERIAL PRIMARY KEY', 'INTEGER PRIMARY KEY AUTOINCREMENT')
         cur.execute(cmd)
     
-    # Simple migration/column check for SQLite fallback
-    if not USE_POSTGRES:
-        for col in ['gpa', 'overall_attendance', 'department']:
-            try: cur.execute(f'ALTER TABLE users ADD COLUMN {col} TEXT')
-            except: pass
+    # Ensure columns exist (Migrations for both SQLite and Postgres)
+    for col in ['gpa', 'overall_attendance', 'department']:
+        try:
+            cur.execute(f'ALTER TABLE users ADD COLUMN {col} TEXT')
+        except:
+            pass
 
     conn.commit()
     conn.close()
@@ -181,9 +182,10 @@ def update_profile():
 def teacher_dashboard():
     if 'user_id' not in session or session['role'] != 'teacher': return redirect(url_for('login'))
     dept = session.get('department')
-    students = execute_query("SELECT * FROM users WHERE role = 'student' AND department = ?", (dept,), fetchall=True)
-    notices = execute_query('SELECT * FROM notices WHERE department = ? ORDER BY date_posted DESC', (dept,), fetchall=True)
-    deadlines = execute_query('SELECT * FROM deadlines WHERE department = ? ORDER BY due_date ASC', (dept,), fetchall=True)
+    # Use TRIM() to avoid invisible whitespace bugs during filtering
+    students = execute_query("SELECT * FROM users WHERE role = 'student' AND TRIM(department) = TRIM(?)", (dept,), fetchall=True)
+    notices = execute_query('SELECT * FROM notices WHERE TRIM(department) = TRIM(?) ORDER BY date_posted DESC', (dept,), fetchall=True)
+    deadlines = execute_query('SELECT * FROM deadlines WHERE TRIM(department) = TRIM(?) ORDER BY due_date ASC', (dept,), fetchall=True)
     return render_template('teacher.html', name=session['name'], department=dept, students=students, notices=notices, deadlines=deadlines)
 
 @app.route('/add_notice', methods=['POST'])
