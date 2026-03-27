@@ -6,7 +6,12 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_for_college_system'
-DB_PATH = 'college.db'
+
+# Use /tmp/ for database if running on Vercel (read-only filesystem elsewhere)
+if os.environ.get('VERCEL'):
+    DB_PATH = '/tmp/college.db'
+else:
+    DB_PATH = 'college.db'
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
