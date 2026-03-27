@@ -1,0 +1,290 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h1 style="color: #fff; font-size: 2.2rem; font-weight: 700;">Student Dashboard</h1>
+    <p style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 0.5rem;">Welcome back, <strong>{{ name
+            }}</strong>. Here's a summary of your academic progress.</p>
+</div>
+
+<div class="dashboard-grid">
+    <div class="card">
+        <h3 style="color: var(--text-secondary); font-weight: 500;">Current Cumulative GPA</h3>
+        <div class="stat-value">{{ user['gpa'] or '0.0' }}<span
+                style="font-size: 1.2rem; color: var(--text-secondary); font-weight: 400;">/10</span></div>
+        {% if user['gpa']|float >= 8.5 %}
+        <span class="badge">Excellent</span>
+        {% elif user['gpa']|float >= 7.0 %}
+        <span class="badge" style="background: rgba(88, 166, 255, 0.2); color: #58a6ff;">Good Standing</span>
+        {% else %}
+        <span class="badge warning">Needs Attention</span>
+        {% endif %}
+    </div>
+    <div class="card">
+        <h3 style="color: var(--text-secondary); font-weight: 500;">Total Attendance</h3>
+        <div class="stat-value" style="color: #3fb950;">{{ user['overall_attendance'] or '0' }}%</div>
+        {% if user['overall_attendance']|int >= 75 %}
+        <span class="badge">Safe Zone</span>
+        {% else %}
+        <span class="badge warning">Low Attendance</span>
+        {% endif %}
+    </div>
+    <div class="card">
+        <h3 style="color: var(--text-secondary); font-weight: 500; margin-bottom: 1.5rem;">College & Department Notices
+        </h3>
+        <div style="max-height: 300px; overflow-y: auto; padding-right: 0.5rem;">
+            {% for notice in notices %}
+            <div style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                    <strong style="color: #fff; font-size: 1rem;">{{ notice['title'] }}</strong>
+                    <span style="color: var(--text-secondary); font-size: 0.75rem;">{{ notice['date_posted'][:10]
+                        }}</span>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.4;">{{ notice['content'] }}
+                </p>
+            </div>
+            {% else %}
+            <p style="color: var(--text-secondary); text-align: center; padding: 2rem 0;">No official notices at this
+                time.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="color: var(--text-secondary); font-weight: 500; margin-bottom: 1.5rem;">Academic Deadlines</h3>
+        <ul style="list-style: none;">
+            {% for deadline in deadlines %}
+            <li
+                style="margin-bottom: 1rem; background: rgba(1, 4, 9, 0.4); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <strong style="color: #fff; font-size: 0.95rem; display: block;">{{ deadline['title']
+                            }}</strong>
+                        <span style="color: var(--text-secondary); font-size: 0.8rem;">Due: {{ deadline['due_date']
+                            }}</span>
+                    </div>
+                    <span class="badge warning" style="font-size: 0.7rem;">Active</span>
+                </div>
+            </li>
+            {% else %}
+            <li style="text-align: center; color: var(--text-secondary); padding: 2rem 0;">No pending deadlines.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.25rem;">My Subject Directory</h3>
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem;" onclick="openSubjectModal()">+ Add New
+            Subject</button>
+    </div>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: -1rem; margin-bottom: 1.5rem;">Note:
+        Attendance and Marks will be filled by your faculty advisors.</p>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject Name</th>
+                    <th>Attendance</th>
+                    <th>Marks Obtained</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects %}
+                <tr>
+                    <td style="color: #fff; font-weight: 500;">{{ subject['name'] }}</td>
+                    <td style="color: #3fb950; font-weight: 600;">{{ subject['attendance'] }}%</td>
+                    <td style="color: #fff; font-weight: 600; font-size: 1.1rem;">{{ subject['marks'] }} <span
+                            style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 400;">/ 100</span></td>
+                    <td>
+                        {% if subject['marks']|int >= 90 %}
+                        <span class="badge">Excellent</span>
+                        {% elif subject['marks']|int >= 75 %}
+                        <span class="badge" style="background: rgba(88, 166, 255, 0.2); color: #58a6ff;">Good</span>
+                        {% elif subject['marks']|int > 0 %}
+                        <span class="badge warning">Needs Review</span>
+                        {% else %}
+                        <span class="badge"
+                            style="background: rgba(139, 148, 158, 0.1); color: var(--text-secondary);">Awaiting
+                            Data</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 2rem 0;">No
+                        subjects added yet. Start by adding your first subject!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ADD SUBJECT MODAL -->
+<div id="subjectModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeSubjectModal()">&times;</span>
+        <h3 style="font-size: 1.5rem; color: #fff; margin-bottom: 0.5rem;">Add New Subject</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem;">Enter the name of the subject
+            you wish to track.</p>
+        <form method="POST" action="{{ url_for('add_subject') }}">
+            <div class="form-group">
+                <label>Subject Name</label>
+                <input type="text" name="subject_name" required placeholder="e.g. Advanced Mathematics">
+            </div>
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeSubjectModal()">Cancel</button>
+                <button type="submit" class="btn">Add Subject</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- PROFILE SUMMARY COMPONENT -->
+<div class="card"
+    style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <h3 style="margin-bottom: 0.25rem; font-size: 1.25rem;">My Profile Settings</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 0;">Manage your personal information
+            and contact details.</p>
+    </div>
+    <button type="button" class="btn" onclick="openProfileModal()">Edit Profile</button>
+</div>
+
+<!-- PROFILE MODAL COMPONENT -->
+<style>
+    /* Modal Overlay */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(5, 11, 20, 0.7);
+        backdrop-filter: blur(10px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.show {
+        opacity: 1;
+    }
+
+    /* Modal Content Card */
+    .modal-content {
+        background: #11151e;
+        max-width: 500px;
+        margin: 4rem auto;
+        padding: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transform: translateY(-20px) scale(0.95);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+    }
+
+    .modal-overlay.show .modal-content {
+        transform: translateY(0) scale(1);
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        color: var(--text-secondary);
+        font-size: 1.8rem;
+        cursor: pointer;
+        transition: color 0.2s;
+        line-height: 1;
+    }
+
+    .close-btn:hover {
+        color: #fff;
+    }
+
+    /* Force Calendar Icon to appear clearly in Dark Mode natively */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 0.6;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator:hover {
+        opacity: 1;
+    }
+</style>
+
+<div id="profileModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeProfileModal()">&times;</span>
+
+        <h3 style="font-size: 1.5rem; color: #fff; margin-bottom: 0.5rem;">Edit Profile Details</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem;">Update your information below.
+            Click the calendar icon to select your date of birth.</p>
+
+        <form method="POST" action="{{ url_for('update_profile') }}">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" value="{{ user['name'] }}" placeholder="e.g. John Doe" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" value="{{ user['email'] or '' }}"
+                    placeholder="e.g. jdoe@university.edu" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phone" value="{{ user['phone'] or '' }}" placeholder="(555) 123-4567"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender" required
+                        style="width: 100%; height: 46px; background: #090c10; border: 1px solid rgba(255, 255, 255, 0.05); padding: 0.5rem 1rem; border-radius: 8px; color: #fff; font-size: 0.95rem; outline: none; transition: border-color 0.2s; cursor: pointer;">
+                        <option value="" {% if not user['gender'] %}selected{% endif %} style="color: #8b949e;" disabled
+                            hidden>Select</option>
+                        <option value="Male" {% if user['gender']=='Male' %}selected{% endif %} style="color: #fff;">
+                            Male</option>
+                        <option value="Female" {% if user['gender']=='Female' %}selected{% endif %}
+                            style="color: #fff;">Female</option>
+                        <option value="Non-Binary" {% if user['gender']=='Non-Binary' %}selected{% endif %}
+                            style="color: #fff;">Non-Binary</option>
+                        <option value="Prefer not to say" {% if user['gender']=='Prefer not to say' %}selected{% endif
+                            %} style="color: #fff;">Prefer not to say</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <!-- the `type="date"` acts as a dynamic browser calendar -->
+                <input type="date" name="dob" value="{{ user['dob'] or '' }}"
+                    style="font-family: inherit; color: #fff; cursor: pointer;" required>
+            </div>
+
+            <div class="form-group">
+                <label>Permanent Home Address</label>
+                <input type="text" name="address" value="{{ user['address'] or '' }}"
+                    placeholder="123 University Ave, Campus City, State" required>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeProfileModal()">Cancel</button>
+                <button type="submit" class="btn">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

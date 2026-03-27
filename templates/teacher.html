@@ -1,0 +1,115 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h1 style="color: #fff; font-size: 2.2rem; font-weight: 700;">Teacher Dashboard</h1>
+    <p style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 0.5rem;">Welcome, <strong>{{ name }}</strong>. Faculty Node: <span class="badge" style="background: rgba(88, 166, 255, 0.2); color: #58a6ff; font-family: monospace; font-size: 0.9rem;">{{ department }}</span></p>
+</div>
+
+<div class="dashboard-grid">
+    <div class="card">
+        <h3 style="color: var(--text-secondary); font-weight: 500;">Active Notices</h3>
+        <div class="stat-value">{{ notices | length }}</div>
+        <span class="badge" style="background: rgba(88, 166, 255, 0.2); color: #58a6ff;">Current Announcements</span>
+    </div>
+    <div class="card">
+        <h3 style="color: var(--text-secondary); font-weight: 500;">Active Deadlines</h3>
+        <div class="stat-value" style="color: #3fb950;">{{ deadlines | length }}</div>
+        <span class="badge">Tracked Targets</span>
+    </div>
+</div>
+
+<div class="dashboard-grid" style="margin-top: 2rem;">
+    <!-- Manage Notices -->
+    <div class="card">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Post College Notice</h3>
+        <form method="POST" action="{{ url_for('add_notice') }}">
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="font-size: 0.8rem; opacity: 0.8;">NOTICE TITLE</label>
+                <input type="text" name="title" required style="width: 100%; background: #090c10; border: 1px solid var(--border-color); color: #fff; padding: 0.75rem; border-radius: 8px;">
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="font-size: 0.8rem; opacity: 0.8;">CONTENT</label>
+                <textarea name="content" required rows="3" style="width: 100%; background: #090c10; border: 1px solid var(--border-color); color: #fff; padding: 0.75rem; border-radius: 8px; resize: none;"></textarea>
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">Post to Department</button>
+        </form>
+        
+        <div style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 1rem; font-weight: 600;">RECENT NOTICES</p>
+            {% for notice in notices %}
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(1, 4, 9, 0.4); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; border: 1px solid var(--border-color);">
+                <span style="color: #fff; font-size: 0.9rem;">{{ notice['title'] }}</span>
+                <a href="{{ url_for('delete_notice', id=notice['id']) }}" style="color: #f85149; font-size: 0.8rem; text-decoration: none;">Delete</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Manage Deadlines -->
+    <div class="card">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Set New Deadline</h3>
+        <form method="POST" action="{{ url_for('add_deadline') }}">
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="font-size: 0.8rem; opacity: 0.8;">DEADLINE TITLE</label>
+                <input type="text" name="title" required style="width: 100%; background: #090c10; border: 1px solid var(--border-color); color: #fff; padding: 0.75rem; border-radius: 8px;">
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label style="font-size: 0.8rem; opacity: 0.8;">DUE DATE</label>
+                <input type="date" name="due_date" required style="width: 100%; background: #090c10; border: 1px solid var(--border-color); color: #fff; padding: 0.75rem; border-radius: 8px;">
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">Add Academic Deadline</button>
+        </form>
+
+        <div style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 1rem; font-weight: 600;">ACTIVE DEADLINES</p>
+            {% for deadline in deadlines %}
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(1, 4, 9, 0.4); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; border: 1px solid var(--border-color);">
+                <div>
+                    <span style="color: #fff; font-size: 0.9rem; display: block;">{{ deadline['title'] }}</span>
+                    <span style="color: var(--text-secondary); font-size: 0.7rem;">{{ deadline['due_date'] }}</span>
+                </div>
+                <a href="{{ url_for('delete_deadline', id=deadline['id']) }}" style="color: #f85149; font-size: 0.8rem; text-decoration: none;">Delete</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- NEW STUDENT DIRECTORY COMPONENT -->
+<div class="card" style="margin-top: 2rem;">
+    <h3 style="margin-bottom: 0.5rem; font-size: 1.25rem;">Enrolled Student Directory ({{ department }})</h3>
+    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 2rem;">Review and manage academic performance records for students within the {{ department }} node.</p>
+    
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll Number</th>
+                    <th>Full Name</th>
+                    <th>Contact Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td><span class="badge" style="background: rgba(88, 166, 255, 0.1); color: #58a6ff; font-family: monospace;">{{ student['username'] }}</span></td>
+                    <td style="color: #fff; font-weight: 500;">{{ student['name'] }}</td>
+                    <td style="color: var(--text-secondary);">{{ student['email'] or 'Not Set' }}</td>
+                    <td style="color: var(--text-secondary);">{{ student['phone'] or 'Not Set' }}</td>
+                    <td>
+                        <a href="{{ url_for('view_profile', student_id=student['id']) }}" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; text-decoration: none;">View Profile</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 2rem 0;">No students registered in the {{ department }} department yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

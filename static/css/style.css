@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-color: #0d1117;
+    --surface-color: rgba(22, 27, 34, 0.7);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-primary: #c9d1d9;
+    --text-secondary: #8b949e;
+    --accent-color: #58a6ff;
+    --accent-hover: #1f6feb;
+    --success: #238636;
+    --danger: #da3633;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: var(--bg-color);
+    background-image: radial-gradient(circle at 15% 50%, rgba(88, 166, 255, 0.05), transparent 25%),
+                      radial-gradient(circle at 85% 30%, rgba(46, 160, 67, 0.05), transparent 25%);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: var(--surface-color);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-left: 1.5rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: #fff;
+}
+
+.logout-btn {
+    background: var(--danger);
+    color: #fff !important;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-left: 1rem;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.logout-btn:hover {
+    background: #b62d2a;
+    transform: translateY(-1px);
+}
+
+.container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    flex: 1;
+    width: 100%;
+}
+
+/* Glassmorphism Card */
+.card {
+    background: var(--surface-color);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.btn {
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    font-size: 1rem;
+    display: inline-block;
+}
+
+.btn:hover {
+    background: var(--accent-hover);
+    transform: scale(1.02);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+}
+.btn-secondary:hover {
+    background: rgba(88, 166, 255, 0.1);
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(1, 4, 9, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+}
+
+/* Flash Messages */
+.flash {
+    background: rgba(218, 54, 51, 0.1);
+    border: 1px solid var(--danger);
+    color: #ff7b72;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 1rem 0;
+}
+
+.badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(35, 134, 54, 0.2);
+    color: #3fb950;
+}
+
+.badge.warning {
+    background: rgba(210, 153, 34, 0.2);
+    color: #d29922;
+}
+
+/* Tables for grades/assignments */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+th {
+    color: var(--text-secondary);
+    font-weight: 500;
+}

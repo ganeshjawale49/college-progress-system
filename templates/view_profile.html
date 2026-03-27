@@ -1,0 +1,122 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div style="margin-bottom: 2rem; margin-top: 0.5rem;">
+    <a href="{{ url_for('teacher_dashboard') }}" style="color: var(--accent-color); text-decoration: none; font-size: 0.95rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem; transition: transform 0.2s;">
+        <span>&larr;</span> Back to Directory
+    </a>
+    <h1 style="color: #fff; font-size: 2.2rem; font-weight: 700; margin-top: 1rem;">Student Profile Record</h1>
+    <p style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 0.3rem;">Read-only view for faculty advising and record keeping.</p>
+</div>
+
+<div class="card" style="max-width: 900px;">
+    
+    <!-- Profile Header Banner -->
+    <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border-color);">
+        <div style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);">
+            🎓
+        </div>
+        <div>
+            <h2 style="color: #fff; font-size: 1.8rem; margin-bottom: 0.4rem;">{{ student['name'] }}</h2>
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <span class="badge" style="background: rgba(88, 166, 255, 0.2); color: #58a6ff; font-family: monospace; font-size: 0.9rem;">{{ student['username'] }}</span>
+                <span style="color: #3fb950; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 0.3rem;">
+                    <span style="display: inline-block; width: 6px; height: 6px; background: #3fb950; border-radius: 50%;"></span> Enrolled
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overall Performance Summary (Teacher Editable) -->
+    <div class="card" style="margin-top: 1.5rem; background: rgba(88, 166, 255, 0.05); border-color: rgba(88, 166, 255, 0.2);">
+        <form method="POST" action="{{ url_for('update_gpa_attendance', student_id=student['id']) }}" style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-end;">
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase;">Cumulative GPA (/10)</label>
+                <input type="text" name="gpa" value="{{ student['gpa'] or '0.0' }}" placeholder="e.g. 8.5" style="width: 100%; background: #090c10; border: 1px solid var(--border-color); color: #fff; padding: 0.75rem; border-radius: 8px; font-size: 1.1rem; font-weight: 700;">
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase;">Total Attendance (%)</label>
+                <input type="number" name="overall_attendance" value="{{ student['overall_attendance'] or '0' }}" min="0" max="100" style="width: 100%; background: #090c10; border: 1px solid var(--border-color); color: #3fb950; padding: 0.75rem; border-radius: 8px; font-size: 1.1rem; font-weight: 700;">
+            </div>
+            <button type="submit" class="btn" style="height: 46px;">Update Overall Stats</button>
+        </form>
+    </div>
+
+    <!-- Academic Data Layout -->
+    <div class="dashboard-grid" style="margin-top: 2rem; gap: 2rem;">
+        <div style="background: rgba(1, 4, 9, 0.2); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <p style="color: var(--text-secondary); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;">Email Address</p>
+            <p style="color: #fff; font-size: 1.05rem;">
+                {% if student['email'] %}
+                    <a href="mailto:{{ student['email'] }}" style="color: var(--accent-color); text-decoration: none;">{{ student['email'] }}</a>
+                {% else %}
+                    <span style="color: rgba(139, 148, 158, 0.5); font-style: italic;">Not provided</span>
+                {% endif %}
+            </p>
+        </div>
+        <div style="background: rgba(1, 4, 9, 0.2); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <p style="color: var(--text-secondary); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;">Phone Number</p>
+            <p style="color: #fff; font-size: 1.05rem;">{{ student['phone'] or 'Not provided' }}</p>
+        </div>
+        <div style="grid-column: 1 / -1; background: rgba(1, 4, 9, 0.4); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <p style="color: var(--text-secondary); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;">Permanent Home Address</p>
+            <p style="color: #fff; font-size: 1.05rem; line-height: 1.5;">
+                {% if student['address'] %}
+                    {{ student['address'] }}
+                {% else %}
+                    <span style="color: rgba(139, 148, 158, 0.5); font-style: italic;">No permanent address on file.</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- NEW ACADEMIC RECORDS SECTION -->
+    <div class="card" style="margin-top: 2rem; background: rgba(1, 4, 9, 0.3); border-color: rgba(59, 130, 246, 0.2);">
+        <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">Academic Performance Records</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 2rem;">Update all of the student's records at once. Hit the save button at the bottom to commit changes.</p>
+        
+        <form method="POST" action="{{ url_for('bulk_update_subjects', student_id=student['id']) }}">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Subject Name</th>
+                            <th style="width: 180px;">Attendance (%)</th>
+                            <th style="width: 180px;">Marks (0-100)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subjects %}
+                        <tr>
+                            <td style="color: #fff; font-weight: 500;">{{ subject['name'] }}</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="number" name="attendance_{{ subject['id'] }}" value="{{ subject['attendance'] }}" min="0" max="100" style="width: 100%; background: #090c10; border: 1px solid var(--border-color); color: #fff; padding: 0.6rem; border-radius: 6px;">
+                                    <span style="color: var(--text-secondary);">%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="number" name="marks_{{ subject['id'] }}" value="{{ subject['marks'] }}" min="0" max="100" style="width: 100%; background: #090c10; border: 1px solid var(--border-color); color: #fff; padding: 0.6rem; border-radius: 6px;">
+                                    <span style="color: var(--text-secondary);">/100</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--text-secondary); padding: 2rem 0;">No subjects registered by the student.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if subjects %}
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn" style="padding: 1rem 2rem;">Save All Academic Records</button>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}
